@@ -1,11 +1,11 @@
 {
         "studentInfo":{
-            "name": "Ram Kumar",
+            "name": "Sumit Shrestha",
             "level":"Bachelors' in Engineering",
             "campus":"Thapathali Campus",
-            "yearpart":"I/I",
-            "examRollNo":"1234",
-            "CRN":"2075/BCT/055",
+            "yearpart":"I/II",
+            "examRollNo":"8894",
+            "CRN":"2075/BCT/044",
             "TURegdNo":null,
             "programme":"Computer Engineering"
 
@@ -23,15 +23,51 @@
                     "final":"32"
                 },
                 "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
+                    "asst":"19",
+                    "final":"32"
+                },
+                "total":"51",
+                "remarks":null
+            },
+            {
+                "code":"EX451",
+                "subject":"Basic Electronics Engineering PRACTICAL",
+                "fullMarks":{
+                    "asst":"25",
+                    "final":null
+                },
+                "passMarks":{
+                    "asst":"10",
+                    "final":null
+                },
+                "obtainedMarks":{
+                    "asst":"24",
+                    "final":null
                 },
                 "total":"58",
                 "remarks":null
             },
             {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
+                "code":"ME451",
+                "subject":"Engineering Drawing II PRACTICAL",
+                "fullMarks":{
+                    "asst":"60",
+                    "final":"40"
+                },
+                "passMarks":{
+                    "asst":"24",
+                    "final":"16"
+                },
+                "obtainedMarks":{
+                    "asst":"52",
+                    "final":"37"
+                },
+                "total":"89",
+                "remarks":null
+            },
+            {
+                "code":"ME452",
+                "subject":"Fundaental of Thermodynamics & Heat Transfer",
                 "fullMarks":{
                     "asst":"20",
                     "final":"80"
@@ -41,15 +77,69 @@
                     "final":"32"
                 },
                 "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
+                    "asst":"13",
+                    "final":"54"
                 },
-                "total":"58",
+                "total":"67",
                 "remarks":null
             },
             {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
+                "code":"ME452",
+                "subject":"Fundaental of Thermodynamics & Heat Transfer PRACTICAL",
+                "fullMarks":{
+                    "asst":"25",
+                    "final":null
+                },
+                "passMarks":{
+                    "asst":"10",
+                    "final":null
+                },
+                "obtainedMarks":{
+                    "asst":"22",
+                    "final":null
+                },
+                "total":"22",
+                "remarks":null
+            },
+            {
+                "code":"ME453",
+                "subject":"Workshop Technology",
+                "fullMarks":{
+                    "asst":"10",
+                    "final":null
+                },
+                "passMarks":{
+                    "asst":"4",
+                    "final":null
+                },
+                "obtainedMarks":{
+                    "asst":"8",
+                    "final":null
+                },
+                "total":"8",
+                "remarks":null
+            },
+            {
+                "code":"ME453",
+                "subject":"Workshop Technology PRACTICAL",
+                "fullMarks":{
+                    "asst":"40",
+                    "final":null
+                },
+                "passMarks":{
+                    "asst":"16",
+                    "final":null
+                },
+                "obtainedMarks":{
+                    "asst":"32",
+                    "final":null
+                },
+                "total":"32",
+                "remarks":null
+            },
+            {
+                "code":"SH451",
+                "subject":"Engineering Mathematics",
                 "fullMarks":{
                     "asst":"20",
                     "final":"80"
@@ -59,15 +149,15 @@
                     "final":"32"
                 },
                 "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
+                    "asst":"12",
+                    "final":"56"
                 },
-                "total":"58",
+                "total":"68",
                 "remarks":null
             },
             {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
+                "code":"SH453",
+                "subject":"Engineering Chemistry",
                 "fullMarks":{
                     "asst":"20",
                     "final":"80"
@@ -77,198 +167,36 @@
                     "final":"32"
                 },
                 "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
+                    "asst":"15",
+                    "final":"48"
                 },
-                "total":"58",
+                "total":"63",
                 "remarks":null
             },
             {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
+                "code":"SH453",
+                "subject":"Engineering Chemistry PRACTICAL",
                 "fullMarks":{
                     "asst":"20",
-                    "final":"80"
+                    "final":"30"
                 },
                 "passMarks":{
                     "asst":"8",
-                    "final":"32"
+                    "final":"12"
                 },
                 "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
+                    "asst":"19",
+                    "final":"26"
                 },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
-                "remarks":null
-            },
-            {
-                "code":"EX451",
-                "subject":"Basic Electronics Engineering",
-                "fullMarks":{
-                    "asst":"20",
-                    "final":"80"
-                },
-                "passMarks":{
-                    "asst":"8",
-                    "final":"32"
-                },
-                "obtainedMarks":{
-                    "asst":"18",
-                    "final":"40"
-                },
-                "total":"58",
+                "total":"45",
                 "remarks":null
             }
     ],
     "summary":{
         "marksEnteredBy":null,
         "verifiedBy":null,
-        "date":"10 Jan 2022",
-        "grandTotal":500,
+        "date":"13 DEC 2019",
+        "grandTotal":469,
         "result":"Passed"
     }
 }

@@ -67,7 +67,7 @@
             },
             {
                 "code":"ME452",
-                "subject":"Fundaental of Thermodynamics & Heat Transfer",
+                "subject":"Fundamental of Thermodynamics & Heat Transfer",
                 "fullMarks":{
                     "asst":"20",
                     "final":"80"
@@ -85,7 +85,7 @@
             },
             {
                 "code":"ME452",
-                "subject":"Fundaental of Thermodynamics & Heat Transfer PRACTICAL",
+                "subject":"Fundamental of Thermodynamics & Heat Transfer PRACTICAL",
                 "fullMarks":{
                     "asst":"25",
                     "final":null

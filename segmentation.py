@@ -1,5 +1,4 @@
 from re import sub
-from urllib import response
 import cv2
 import numpy as np
 from imutils.perspective import four_point_transform
@@ -182,6 +181,24 @@ def get_crn_box(image):
     return req_data
     
 
+def get_subject_code(image):
+    start_x = 60
+    end_x = 160
+
+    start_y = 0
+    end_y = -1
+
+    subject = image[start_y:end_y,start_x:end_x]
+
+    data = pytesseract.image_to_string(subject)
+    data = data.strip().rstrip()
+
+    if len(data) > 5:
+        return None
+    else:
+        return data
+
+
 def get_marks_table(image:np.array) -> np.array:
     """
     This function checks for the marks table
@@ -317,12 +334,14 @@ def get_subject_from_row(image:np.array) -> list:
     """
     ret_data = {
         "Subject" : None,
+        "code" : None,
     }
 
-    start_x = 20
-    end_x = 520
+    start_x = 150
+    end_x = 530
 
     subject = image[0:-1,start_x:end_x]
+    ret_data["code"] = get_subject_code(image)
     data = pytesseract.image_to_string(subject)
     data = data.strip().rstrip()
 
@@ -367,13 +386,14 @@ def get_grand_total(image):
     return {"Total":0}
 
 
+
 def get_data():
     """
 
     This is the main method that calls all other functions.
 
     """
-
+    counter = 0 
     try:
         base_image = cv2.imread(f"./uploads/result.jpg")  
         resized_image = cv2.resize(base_image,(IMAGE_HEIGHT,IMAGE_WIDTH))  
@@ -407,7 +427,7 @@ def get_data():
                         "examRollNo":crn["Exam Roll"],
                         "CRN":crn["CRN"],
                         "TURegdNo":None,
-                        "programme":None
+                        "programme": "Computer Engineering",
                         }
                     response["summary"] = {
                         "marksEnteredBy":None,
@@ -426,8 +446,10 @@ def get_data():
                     rows = get_rows(marks_table)
 
                     for each_row in rows:
+                        counter += 1
                         data = {
                             "subject":None,
+                            "code": None,
                             "full_marks_asst":0,
                             "full_marks_prac":0,
                             "pass_marks_asst":0,
@@ -464,6 +486,7 @@ def get_data():
                         marks_obtained_prac = marks_obtained_prac.strip().rstrip()
 
                         data["subject"] = subject["Subject"]
+                        data["code"] = subject["code"]
 
                         # data = {
                         #     "subject":None,
@@ -476,7 +499,8 @@ def get_data():
                         # }
 
                         response["tableData"].append({
-                            "code":None,
+                            "id":counter,
+                            "code":data["code"],
                             "subject":data["subject"],
                             "fullMarks":{
                                 "asst":data["full_marks_asst"],

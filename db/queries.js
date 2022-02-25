@@ -31,8 +31,9 @@ const insertData = (req, res) => {
         client.query('INSERT INTO marksheet (yearpart, examRoll, crn, subjectData, date, grandTotal, result) VALUES ($1, $2, $3, $4, $5, $6, $7)',
         [yearpart, examRollNo, CRN, subjectData, date, grandTotal, result],
         (error,results) => {
-            if(error)
+            if(error){
                 throw error;
+            }
             res.status(201).send(`${message}\nMarksheet added of student with CRN: ${CRN}.`);
         }
     )

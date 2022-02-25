@@ -26,7 +26,7 @@ app.get('/',(req,res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 })
 
-app.get('/script-test', (req,res) => {
+app.get('/result-data', (req,res) => {
   let spawn = require("child_process").spawn;
 
   let process = spawn('python',["./segmentation.py"] );
@@ -57,19 +57,21 @@ app.post('/upload', (req, res) => {
       return res.status(500).send(err);
     }
 
+    res.send('File Uploaded');
+
     //res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
-    let spawn = require("child_process").spawn;
+    // let spawn = require("child_process").spawn;
 
-    let process = spawn('python',["./segmentation.py"] );
+    // let process = spawn('python',["./segmentation.py"] );
 
-    let resultString = '';
+    // let resultString = '';
 
-    process.stdout.on('data', (data) => {
-      resultString += data.toString();
-      //res.json(resultString);
-      res.json(JSON.parse(resultString));
+    // process.stdout.on('data', (data) => {
+    //   resultString += data.toString();
+    //   //res.json(resultString);
+    //   res.json(JSON.parse(resultString));
 
-    })
+    // })
   });
 });
 

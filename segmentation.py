@@ -447,6 +447,7 @@ def get_data():
 
                     for each_row in rows:
                         counter += 1
+                        cv2.imwrite("f'{counter}'.jpg",each_row)
                         data = {
                             "subject":None,
                             "code": None,

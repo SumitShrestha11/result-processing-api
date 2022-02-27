@@ -1,9 +1,10 @@
-from re import sub
+from distutils.command.config import config
 import cv2
 import numpy as np
 from imutils.perspective import four_point_transform
 import pytesseract
 import json
+import time
 
 IMAGE_HEIGHT = 1200
 IMAGE_WIDTH = 1200
@@ -105,8 +106,8 @@ def get_name_box(image:np.array) -> dict:
         name = image[start_y:end_y,start_x:end_x]
         image_sharp = cv2.filter2D(src=name, ddepth=-1, kernel=kernel)
         name = cv2.cvtColor(image_sharp, cv2.COLOR_BGR2GRAY)
-        cv2.imshow("Name ROI",name)
-        cv2.waitKey(100)
+        # cv2.imshow("Name ROI",name)
+        # cv2.waitKey(100)
         data = parse_data(pytesseract.image_to_string(name))
         try:
             if data["name"]:
@@ -143,8 +144,8 @@ def get_crn_box(image):
         name = image[start_y:end_y,start_x:end_x]
         image_sharp = cv2.filter2D(src=name, ddepth=-1, kernel=kernel)
         name = cv2.cvtColor(image_sharp, cv2.COLOR_BGR2GRAY)
-        cv2.imshow("CRN",name)
-        cv2.waitKey(100)
+        # cv2.imshow("CRN",name)
+        # cv2.waitKey(100)
 
         data = pytesseract.image_to_string(name)
         data = data.strip().rstrip()
@@ -182,15 +183,27 @@ def get_crn_box(image):
     
 
 def get_subject_code(image):
-    start_x = 60
-    end_x = 160
+    kernel = np.array(
+        [[0, -1, 0],
+        [-1, 5,-1],
+        [0, -1, 0]])
+
+    start_x = 20
+    end_x = 130
 
     start_y = 0
     end_y = -1
 
     subject = image[start_y:end_y,start_x:end_x]
 
-    data = pytesseract.image_to_string(subject)
+    _,thres = cv2.threshold(subject,127,255,cv2.THRESH_BINARY) 
+    thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
+    thres = cv2.blur(thres, (1,1))
+
+    # cv2.imshow("code",thres)
+    # cv2.waitKey(1000)
+
+    data = pytesseract.image_to_string(thres)
     data = data.strip().rstrip()
 
     if len(data) > 5:
@@ -278,8 +291,8 @@ def get_rows(image:np.array) -> list:
             start = end 
             end += int(40 + (0.15* i))
             each_row = image[start:end,0:1100]
-            cv2.imshow("Rows",each_row)
-            cv2.waitKey(500)
+            # cv2.imshow("Rows",each_row)
+            # cv2.waitKey(500)
         else:
             # print("Can't detect anything")
             err_count += 1
@@ -289,8 +302,8 @@ def get_rows(image:np.array) -> list:
             start += 5
             end += 5
             each_row = image[start:end,0:1100]
-            cv2.imshow("Rows",each_row)
-            cv2.waitKey(500)
+            # cv2.imshow("Rows",each_row)
+            # cv2.waitKey(500)
 
     return rows
 
@@ -337,10 +350,12 @@ def get_subject_from_row(image:np.array) -> list:
         "code" : None,
     }
 
-    start_x = 150
+    start_x = 100
     end_x = 530
 
     subject = image[0:-1,start_x:end_x]
+    # cv2.imshow("title",subject)
+    # cv2.waitKey(1000)
     ret_data["code"] = get_subject_code(image)
     data = pytesseract.image_to_string(subject)
     data = data.strip().rstrip()
@@ -349,7 +364,6 @@ def get_subject_from_row(image:np.array) -> list:
         pass
     else:
         ret_data["Subject"] = data
-
     return ret_data
 
 def get_grand_total(image):
@@ -385,6 +399,88 @@ def get_grand_total(image):
     
     return {"Total":0}
 
+def get_marks(image):
+    ret = {
+        "full_marks_asst":0,
+        "full_marks_prac":0, 
+        "pass_marks_asst":0, 
+        "pass_marks_prac":0, 
+        "marks_obtained_asst":0,
+        "marks_obtained_prac":0
+    }
+
+    kernel = np.array(
+        [[0, -1, 0],
+        [-1, 5,-1],
+        [0, -1, 0]])
+    
+    start_x = 560
+    end_x = 620 
+    start_y = 12
+    end_y = 35
+
+    x = list()
+    x = 6 * [0]
+    for j in range(6):
+        for i in range(20):
+            try:
+                conf = r'--oem 1 --psm 6 digits'
+                marks = image[start_y:end_y,start_x:end_x]
+                _,thres = cv2.threshold(marks,127,255,cv2.THRESH_BINARY) 
+                thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
+                thres = cv2.blur(thres, (2,2))
+
+                data = pytesseract.image_to_string(thres,config=conf)
+                data = data.rstrip().strip()
+
+            except:
+                pass
+            
+
+
+
+            if data:
+                s = str()
+                t = str(data)
+                for each in t:
+                    if each.isnumeric():
+                        s += each 
+                    if each == "s" or each == "S":
+                        s += "5"
+                try:
+                    x[j] = int(s)
+                    break
+                except:
+                    pass
+                
+            else:
+                if i < 10:
+                    start_x += 4
+                    end_x += 4
+                    start_y += 1 
+                    end_y += 1
+                else:
+                    start_x -= 6
+                    end_x -= 6 
+                    start_y -= 2 
+                    end_y -= 2
+
+
+
+        ret["full_marks_asst"] = x[0]
+        ret["full_marks_prac"] = x[1]
+        ret["marks_obtained_asst"] = x[2]
+        ret["marks_obtained_prac"] = x[3]
+        ret["pass_marks_asst"] = x[4]
+        ret["pass_marks_prac"] = x[5]  
+
+        
+
+        start_x += 60 
+        end_x += 60
+    return ret
+
+            
 
 
 def get_data():
@@ -447,7 +543,6 @@ def get_data():
 
                     for each_row in rows:
                         counter += 1
-                        cv2.imwrite("f'{counter}'.jpg",each_row)
                         data = {
                             "subject":None,
                             "code": None,
@@ -460,31 +555,32 @@ def get_data():
                         }
 
                         subject = get_subject_from_row(each_row)
+                        marks = get_marks(each_row)
                         
                         if subject["Subject"] is None:
                             continue
 
-                        full_marks_asst = each_row[0:-1,520:600]
-                        full_marks_prac = each_row[0:-1,600:680]
-                        pass_marks_asst = each_row[0:-1,680:760]
-                        pass_marks_prac = each_row[0:-1,760:840]
-                        marks_obtained_asst = each_row[0:-1,840:920]
-                        marks_obtained_prac = each_row[0:-1,920:1060]
+                        data["full_marks_asst"] = marks["full_marks_asst"]
+                        data["full_marks_prac"] = marks["full_marks_prac"]
+                        data["pass_marks_asst"] = marks["pass_marks_asst"]
+                        data["pass_marks_prac"] = marks["pass_marks_prac"]
+                        data["marks_obtained_asst"] = marks["marks_obtained_asst"]
+                        data["marks_obtained_prac"] = marks["marks_obtained_prac"]
 
-                        full_marks_asst = pytesseract.image_to_string(full_marks_asst)
-                        full_marks_prac = pytesseract.image_to_string(full_marks_prac)
-                        pass_marks_asst = pytesseract.image_to_string(pass_marks_asst)
-                        pass_marks_prac = pytesseract.image_to_string(pass_marks_prac)
-                        marks_obtained_asst = pytesseract.image_to_string(marks_obtained_asst)
-                        marks_obtained_prac = pytesseract.image_to_string(marks_obtained_prac)
+                        # full_marks_asst = pytesseract.image_to_string(full_marks_asst)
+                        # full_marks_prac = pytesseract.image_to_string(full_marks_prac)
+                        # pass_marks_asst = pytesseract.image_to_string(pass_marks_asst)
+                        # pass_marks_prac = pytesseract.image_to_string(pass_marks_prac)
+                        # marks_obtained_asst = pytesseract.image_to_string(marks_obtained_asst)
+                        # marks_obtained_prac = pytesseract.image_to_string(marks_obtained_prac)
 
 
-                        full_marks_asst = full_marks_asst.strip().rstrip()
-                        full_marks_prac = full_marks_prac.strip().rstrip()
-                        pass_marks_asst = pass_marks_asst.strip().rstrip()
-                        pass_marks_prac = pass_marks_prac.strip().rstrip()
-                        marks_obtained_asst = marks_obtained_asst.strip().rstrip()
-                        marks_obtained_prac = marks_obtained_prac.strip().rstrip()
+                        # full_marks_asst = full_marks_asst.strip().rstrip()
+                        # full_marks_prac = full_marks_prac.strip().rstrip()
+                        # pass_marks_asst = pass_marks_asst.strip().rstrip()
+                        # pass_marks_prac = pass_marks_prac.strip().rstrip()
+                        # marks_obtained_asst = marks_obtained_asst.strip().rstrip()
+                        # marks_obtained_prac = marks_obtained_prac.strip().rstrip()
 
                         data["subject"] = subject["Subject"]
                         data["code"] = subject["code"]

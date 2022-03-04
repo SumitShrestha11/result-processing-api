@@ -1,10 +1,9 @@
-from distutils.command.config import config
+from operator import sub
 import cv2
 import numpy as np
 from imutils.perspective import four_point_transform
 import pytesseract
 import json
-import time
 
 IMAGE_HEIGHT = 1200
 IMAGE_WIDTH = 1200
@@ -406,7 +405,8 @@ def get_marks(image):
         "pass_marks_asst":0, 
         "pass_marks_prac":0, 
         "marks_obtained_asst":0,
-        "marks_obtained_prac":0
+        "marks_obtained_prac":0,
+        "total":0,
     }
 
     kernel = np.array(
@@ -419,26 +419,27 @@ def get_marks(image):
     start_y = 12
     end_y = 35
 
+    true_start_x = start_x
+    true_end_x = end_x
+    true_start_y = start_y 
+    true_end_y = end_y
+
     x = list()
-    x = 6 * [0]
-    for j in range(6):
+    x = 7 * [0]
+    for j in range(7):
         for i in range(20):
             try:
-                conf = r'--oem 1 --psm 6 digits'
+                conf_ = r'--oem 1 --psm 6 digits'
                 marks = image[start_y:end_y,start_x:end_x]
                 _,thres = cv2.threshold(marks,127,255,cv2.THRESH_BINARY) 
                 thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
                 thres = cv2.blur(thres, (2,2))
-
-                data = pytesseract.image_to_string(thres,config=conf)
+                data = pytesseract.image_to_string(thres,config=conf_)
                 data = data.rstrip().strip()
 
-            except:
+            except Exception as e:
                 pass
             
-
-
-
             if data:
                 s = str()
                 t = str(data)
@@ -469,19 +470,29 @@ def get_marks(image):
 
         ret["full_marks_asst"] = x[0]
         ret["full_marks_prac"] = x[1]
-        ret["marks_obtained_asst"] = x[2]
-        ret["marks_obtained_prac"] = x[3]
-        ret["pass_marks_asst"] = x[4]
-        ret["pass_marks_prac"] = x[5]  
+        ret["pass_marks_asst"] = x[2]
+        ret["pass_marks_prac"] = x[3]  
+        ret["marks_obtained_asst"] = x[4]
+        ret["marks_obtained_prac"] = x[5]
+        ret["total"] = x[6]
 
-        
 
-        start_x += 60 
-        end_x += 60
+        start_x = true_start_x
+        end_x = true_end_x 
+        start_y = true_start_y
+        end_y = true_end_y
+
+        start_x += int(65 + j *1.25)
+        end_x += int(65 + j *1.25)
+        start_y += int(1) 
+        end_y += int(1)
+
+        true_start_x = start_x 
+        true_end_x = end_x 
+        true_start_y = start_y
+        true_end_y = end_y
+    print(ret)
     return ret
-
-            
-
 
 def get_data():
     """
@@ -491,7 +502,8 @@ def get_data():
     """
     counter = 0 
     try:
-        base_image = cv2.imread(f"./uploads/result.jpg")  
+        # base_image = cv2.imread(f"./../samples/good3.jpg")
+        base_image = cv2.imread(f"./uploads/result.jpg") 
         resized_image = cv2.resize(base_image,(IMAGE_HEIGHT,IMAGE_WIDTH))  
     except Exception as e:
         # no file is found.
@@ -552,6 +564,7 @@ def get_data():
                             "pass_marks_prac":0,
                             "marks_obtained_asst":0,
                             "marks_obtained_prac":0,
+                            "total":0,
                         }
 
                         subject = get_subject_from_row(each_row)
@@ -584,6 +597,7 @@ def get_data():
 
                         data["subject"] = subject["Subject"]
                         data["code"] = subject["code"]
+                        data['total'] = marks["total"]
 
                         # data = {
                         #     "subject":None,

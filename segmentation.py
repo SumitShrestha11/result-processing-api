@@ -1,14 +1,19 @@
-from operator import sub
+from pickletools import pyset
+import time
+from unittest import result
 import cv2
 import numpy as np
 from imutils.perspective import four_point_transform
 import pytesseract
 import json
+import os 
+
 
 IMAGE_HEIGHT = 1200
 IMAGE_WIDTH = 1200
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
 
 def parse_data(text:str) -> dict:
     """
@@ -31,7 +36,11 @@ def parse_data(text:str) -> dict:
     lines = text.split("\n")
     
     temp = list()
-    values = dict()
+    values = {
+        "name":None,
+        "level":None,
+        "campus":None,
+    }
 
     for line in lines:
         if line == '':
@@ -49,13 +58,16 @@ def parse_data(text:str) -> dict:
 
     for key,value in values.items():
         temp_=str()
-        for each_character in value:
-            if each_character == ' ':
-                temp_ += " "
-            if each_character.isalpha():
-                temp_ += each_character
+        try:
+            for each_character in value:
+                if each_character == ' ':
+                    temp_ += " "
+                if each_character.isalpha():
+                    temp_ += each_character
 
-        values[key] = temp_.strip().rstrip()
+            values[key] = temp_.strip().rstrip()
+        except:
+            pass
 
     return values
 
@@ -195,20 +207,30 @@ def get_subject_code(image):
 
     subject = image[start_y:end_y,start_x:end_x]
 
-    _,thres = cv2.threshold(subject,127,255,cv2.THRESH_BINARY) 
+    _,thres = cv2.threshold(subject,200,255,cv2.THRESH_BINARY) 
     thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
-    thres = cv2.blur(thres, (1,1))
-
-    # cv2.imshow("code",thres)
-    # cv2.waitKey(1000)
-
+    thres = cv2.blur(thres, (2,2))
+    thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
+   
     data = pytesseract.image_to_string(thres)
     data = data.strip().rstrip()
 
-    if len(data) > 5:
+    if data == "":
+        return None
+
+
+    if len(data) < 5:
         return None
     else:
-        return data
+        s = str()
+
+        for i in data:
+            if i == "S" or i == "s":
+                s += "5"
+            else:
+                s+= i
+
+        return s
 
 
 def get_marks_table(image:np.array) -> np.array:
@@ -349,20 +371,43 @@ def get_subject_from_row(image:np.array) -> list:
         "code" : None,
     }
 
-    start_x = 100
+    start_x = 90
     end_x = 530
 
+    kernel = np.array(
+        [[0, -1, 0],
+        [-1, 5,-1],
+        [0, -1, 0]])
+
     subject = image[0:-1,start_x:end_x]
-    # cv2.imshow("title",subject)
-    # cv2.waitKey(1000)
+    
+    
     ret_data["code"] = get_subject_code(image)
-    data = pytesseract.image_to_string(subject)
+    
+    _,thres = cv2.threshold(subject,200,255,cv2.THRESH_BINARY) 
+    thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
+
+    data = pytesseract.image_to_string(thres)
     data = data.strip().rstrip()
+    s = str()
+
+    for i in data:
+        if i.isnumeric():
+            pass
+        else:
+            s+= i
+
+
+    s = s.strip().rstrip()
+    x = s.split(" ")
+    if len(x[0]) < 3:
+        s = " ".join(x[1:])
+
 
     if "Subjects" in data or "Code" in data or "Title" in data:
         pass
     else:
-        ret_data["Subject"] = data
+        ret_data["Subject"] = s
     return ret_data
 
 def get_grand_total(image):
@@ -414,10 +459,10 @@ def get_marks(image):
         [-1, 5,-1],
         [0, -1, 0]])
     
-    start_x = 560
-    end_x = 620 
-    start_y = 12
-    end_y = 35
+    start_x = 540
+    end_x = 630 
+    start_y = 10
+    end_y = 45
 
     true_start_x = start_x
     true_end_x = end_x
@@ -431,7 +476,9 @@ def get_marks(image):
             try:
                 conf_ = r'--oem 1 --psm 6 digits'
                 marks = image[start_y:end_y,start_x:end_x]
-                _,thres = cv2.threshold(marks,127,255,cv2.THRESH_BINARY) 
+                _,thres = cv2.threshold(marks,200,255,cv2.THRESH_BINARY) 
+                thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
+                thres = cv2.blur(thres, (2,2))
                 thres = cv2.filter2D(src=thres, ddepth=-1, kernel=kernel)
                 thres = cv2.blur(thres, (2,2))
                 data = pytesseract.image_to_string(thres,config=conf_)
@@ -456,15 +503,15 @@ def get_marks(image):
                 
             else:
                 if i < 10:
-                    start_x += 4
-                    end_x += 4
-                    start_y += 1 
-                    end_y += 1
+                    start_x -= 2
+                    end_x -= 2
+                    start_y -= 1 
+                    end_y -= 1
                 else:
-                    start_x -= 6
-                    end_x -= 6 
-                    start_y -= 2 
-                    end_y -= 2
+                    start_x += 3
+                    end_x += 3 
+                    start_y += 2 
+                    end_y += 2
 
 
 
@@ -491,8 +538,32 @@ def get_marks(image):
         true_end_x = end_x 
         true_start_y = start_y
         true_end_y = end_y
-    # print(ret)
     return ret
+
+
+def get_yearpart(image):
+    year_p = image[250:295,50:400]
+    data = pytesseract.image_to_string(year_p)
+    data = data.strip().rstrip()
+    data = data.split("\n")
+    for i in data:
+        if len(i) > 10:
+            j = i.split("-")
+            return j[-1]
+    return 0
+
+def get_result(image):
+    res = image[1000:1100,700:-1]
+    data = pytesseract.image_to_string(res)
+    data = data.strip().rstrip()
+    data = data.split("\n")
+    for i in data:
+        j = i.split(" ")
+        for k in j:
+            if k == "Result" or k == "result":
+                return j[-1]
+
+
 
 def get_data():
     """
@@ -524,14 +595,16 @@ def get_data():
                     image = get_paper(resized_image,paper_boundaries)
 
                     data = get_name_box(image)
+                    year_part = get_yearpart(image)
                     crn = get_crn_box(image)
                     grand_total = get_grand_total(image)
+                    result = get_result(image)
                     
                     response["studentInfo"] = {
                         "name":data["name"],
                         "level":data["level"],
                         "campus":"Thapathali Campus",
-                        "yearpart": None,
+                        "yearpart": year_part,
                         "examRollNo":crn["Exam Roll"],
                         "CRN":crn["CRN"],
                         "TURegdNo":None,
@@ -542,7 +615,7 @@ def get_data():
                         "verifiedBy":None,
                         "date":None,
                         "grandTotal":grand_total["Total"],
-                        "result":None
+                        "result":result,
                     }
                     
                     #print(response)
@@ -580,34 +653,12 @@ def get_data():
                         data["marks_obtained_asst"] = marks["marks_obtained_asst"]
                         data["marks_obtained_prac"] = marks["marks_obtained_prac"]
 
-                        # full_marks_asst = pytesseract.image_to_string(full_marks_asst)
-                        # full_marks_prac = pytesseract.image_to_string(full_marks_prac)
-                        # pass_marks_asst = pytesseract.image_to_string(pass_marks_asst)
-                        # pass_marks_prac = pytesseract.image_to_string(pass_marks_prac)
-                        # marks_obtained_asst = pytesseract.image_to_string(marks_obtained_asst)
-                        # marks_obtained_prac = pytesseract.image_to_string(marks_obtained_prac)
 
-
-                        # full_marks_asst = full_marks_asst.strip().rstrip()
-                        # full_marks_prac = full_marks_prac.strip().rstrip()
-                        # pass_marks_asst = pass_marks_asst.strip().rstrip()
-                        # pass_marks_prac = pass_marks_prac.strip().rstrip()
-                        # marks_obtained_asst = marks_obtained_asst.strip().rstrip()
-                        # marks_obtained_prac = marks_obtained_prac.strip().rstrip()
 
                         data["subject"] = subject["Subject"]
                         data["code"] = subject["code"]
                         data['total'] = marks["total"]
 
-                        # data = {
-                        #     "subject":None,
-                        #     "full_marks_asst":0,
-                        #     "full_marks_prac":0,
-                        #     "pass_marks_asst":0,
-                        #     "pass_marks_prac":0,
-                        #     "marks_obtained_asst":0,
-                        #     "marks_obtained_prac":0,
-                        # }
 
                         response["tableData"].append({
                             "id":counter,
@@ -633,4 +684,8 @@ def get_data():
                         
 
 if __name__ == "__main__":
+    start = time.time()
     get_data()
+    end = time.time()
+    t = (end - start )
+    # print(f"Time taken: {t:>5.2f} secs.")

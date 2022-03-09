@@ -491,7 +491,7 @@ def get_marks(image):
         true_end_x = end_x 
         true_start_y = start_y
         true_end_y = end_y
-    print(ret)
+    # print(ret)
     return ret
 
 def get_data():
@@ -625,7 +625,7 @@ def get_data():
                                 "asst":data["marks_obtained_asst"],
                                 "final":data["marks_obtained_prac"]
                             },
-                            "total":None,
+                            "total":data['total'],
                             "remarks":None
                             })
                     print(json.dumps(response))

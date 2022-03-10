@@ -12,8 +12,8 @@ import os
 IMAGE_HEIGHT = 1200
 IMAGE_WIDTH = 1200
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
+if os.name == "nt":
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 def parse_data(text:str) -> dict:
     """
@@ -459,7 +459,7 @@ def get_marks(image):
         [-1, 5,-1],
         [0, -1, 0]])
     
-    start_x = 540
+    start_x = 560
     end_x = 630 
     start_y = 10
     end_y = 45
@@ -521,7 +521,8 @@ def get_marks(image):
         ret["pass_marks_prac"] = x[3]  
         ret["marks_obtained_asst"] = x[4]
         ret["marks_obtained_prac"] = x[5]
-        ret["total"] = x[6]
+        tot = x[4] + x[5]
+        ret["total"] = tot
 
 
         start_x = true_start_x
@@ -573,7 +574,7 @@ def get_data():
     """
     counter = 0 
     try:
-        # base_image = cv2.imread(f"./../samples/good3.jpg")
+        # base_image = cv2.imread(f"./../samples/good2.jpg")
         base_image = cv2.imread(f"./uploads/result.jpg") 
         resized_image = cv2.resize(base_image,(IMAGE_HEIGHT,IMAGE_WIDTH))  
     except Exception as e:
